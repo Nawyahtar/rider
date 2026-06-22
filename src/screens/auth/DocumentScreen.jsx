@@ -16,31 +16,32 @@ import CustomConfirmModal from '../../components/modals/CustomConfirmModal';
 import { RegisterContext } from '../../context/RegisterContext';
 import { Screen } from '../../constant/Screen';
 import { Images } from 'lucide-react-native';
+import { LanguageContext } from '../../context/LanguageContext';
 
 const documents = [
   {
     id: 'driver_license',
-    label: "Driver's License",
+    labelKey: 'documents.driverLicense',
     description: "Upload a clear photo of your driver's license",
   },
   {
     id: 'vehicle_registration',
-    label: 'Vehicle Registration',
+    labelKey: 'documents.vehicleRegistration',
     description: 'Upload a clear photo of your vehicle registration',
   },
   {
     id: 'vehicle_photo',
-    label: 'Vehicle Photo',
+    labelKey: 'documents.vehiclePhoto',
     description: 'Upload a clear photo of your vehicle',
   },
   {
     id: 'police_recommendation',
-    label: 'Police Recommendation',
+    labelKey: 'documents.policeRecommendation',
     description: 'Upload a clear photo of your police recommendation',
   },
   {
     id: 'insurance_certificate',
-    label: 'Insurance Certificate',
+    labelKey: 'documents.insuranceCertificate',
     description: 'Upload a clear photo of your insurance certificate',
   },
 ];
@@ -56,6 +57,7 @@ const FILE_TYPES = [
 const DocumentScreen = ({ navigation }) => {
   const { registerData, updateStepData, resetRegisterData } =
     useContext(RegisterContext);
+  const { t } = useContext(LanguageContext);
   const [uploaded, setUploaded] = useState({});
   const [confirmModal, setConfirmModal] = useState(false);
   const [alertModal, setAlertModal] = useState({ visible: false, message: '' });
@@ -65,7 +67,7 @@ const DocumentScreen = ({ navigation }) => {
   useEffect(() => {
     const current = registerData?.document || {};
     setUploaded(current);
-  }, []);
+  }, [registerData?.document]);
 
   const requestStoragePermission = async () => {
     if (Platform.OS !== 'android') return true;
@@ -74,11 +76,11 @@ const DocumentScreen = ({ navigation }) => {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
         {
-          title: 'Storage Permission',
-          message: 'App needs access to your files to upload documents.',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
+          title: t('dialogs.storagePermissionTitle'),
+          message: t('dialogs.storagePermissionMessage'),
+          buttonNeutral: t('dialogs.askLater'),
+          buttonNegative: t('common.cancel'),
+          buttonPositive: t('common.ok'),
         },
       );
       return granted === PermissionsAndroid.RESULTS.GRANTED;
@@ -93,7 +95,7 @@ const DocumentScreen = ({ navigation }) => {
     if (!hasPermission) {
       return setAlertModal({
         visible: true,
-        message: 'Cannot access files without permission.',
+        message: t('dialogs.filePermissionDenied'),
       });
     }
 
@@ -124,7 +126,7 @@ const DocumentScreen = ({ navigation }) => {
         console.error('Upload error:', err);
         setAlertModal({
           visible: true,
-          message: 'Unable to upload document. Please try again.',
+          message: t('dialogs.uploadFailed'),
         });
       }
     }
@@ -156,9 +158,9 @@ const DocumentScreen = ({ navigation }) => {
     if (missing.length > 0) {
       return setAlertModal({
         visible: true,
-        message: `Please upload the following:\n${missing
-          .map(doc => `• ${doc.label}`)
-          .join('\n')}`,
+        message: t('dialogs.uploadFollowing', {
+          documents: missing.map(doc => `• ${t(doc.labelKey)}`).join('\n'),
+        }),
       });
     }
 
@@ -203,7 +205,7 @@ const DocumentScreen = ({ navigation }) => {
             <Images size={26} color="#555" />
           )}
           <View style={styles.textContent}>
-            <Text style={styles.label}>{doc.label}</Text>
+            <Text style={styles.label}>{t(doc.labelKey)}</Text>
             <Text style={styles.description}>{doc.description}</Text>
           </View>
         </View>
@@ -242,16 +244,16 @@ const DocumentScreen = ({ navigation }) => {
 
       <CustomConfirmModal
         visible={confirmModal}
-        onConfirmText="Remove"
-        title="Remove Document"
-        message="Are you sure you want to remove this file?"
+        onConfirmText={t('common.remove')}
+        title={t('dialogs.removeDocumentTitle')}
+        message={t('dialogs.removeDocumentMessage')}
         onCancel={() => setConfirmModal(false)}
         onConfirm={confirmRemove}
       />
 
       <CustomConfirmModal
         visible={alertModal.visible}
-        title="Alert"
+        title={t('common.alert')}
         message={alertModal.message}
         onConfirm={() => setAlertModal({ visible: false, message: '' })}
       />

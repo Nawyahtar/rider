@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   StyleSheet,
   Text,
-  View,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
@@ -13,8 +12,10 @@ import ButtonComponent from '../../components/buttons/ButtonComponent';
 import Colors from '../../styles/Color';
 import { Screen } from '../../constant/Screen';
 import CustomConfirmModal from '../../components/modals/CustomConfirmModal';
+import { LanguageContext } from '../../context/LanguageContext';
 
 const ForgetPasswordScreen = ({ navigation }) => {
+  const { t } = useContext(LanguageContext);
   const [emailOrPhone, setEmailOrPhone] = useState('');
   const [alertModal, setAlertModal] = useState({ visible: false, message: '' });
 
@@ -52,7 +53,7 @@ const ForgetPasswordScreen = ({ navigation }) => {
       </KeyboardAvoidingView>
       <CustomConfirmModal
         visible={alertModal.visible}
-        title="Alert"
+        title={t('common.alert')}
         message={alertModal.message}
         onConfirm={() => setAlertModal({ visible: false, message: '' })}
       />

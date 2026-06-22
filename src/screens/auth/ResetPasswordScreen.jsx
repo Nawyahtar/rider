@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -12,8 +12,10 @@ import ButtonComponent from '../../components/buttons/ButtonComponent';
 import { OtpInput } from 'react-native-otp-entry';
 import { Screen } from '../../constant/Screen';
 import CustomConfirmModal from '../../components/modals/CustomConfirmModal';
+import { LanguageContext } from '../../context/LanguageContext';
 
 const ResetPasswordScreen = ({ navigation }) => {
+  const { t } = useContext(LanguageContext);
   const [code, setCode] = useState('');
   const [alertModal, setAlertModal] = useState({ visible: false, message: '' });
 
@@ -21,8 +23,8 @@ const ResetPasswordScreen = ({ navigation }) => {
     Keyboard.dismiss();
 
     if (code.length !== 6) {
-      setAlertModal({visible:true,message:"You need to fill 6 digit"})
-      return
+      setAlertModal({ visible: true, message: t('dialogs.fillSixDigits') });
+      return;
     }
     navigation.navigate(Screen.Auth.CreatenewPassword)
   };
@@ -76,7 +78,7 @@ const ResetPasswordScreen = ({ navigation }) => {
       </View>
       <CustomConfirmModal
         visible={alertModal.visible}
-        title="Alert"
+        title={t('common.alert')}
         message={alertModal.message}
         onConfirm={() => setAlertModal({ visible: false, message: '' })}
       />

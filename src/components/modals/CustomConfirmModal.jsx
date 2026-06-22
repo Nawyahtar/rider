@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useContext } from 'react';
 import {
   Modal,
   View,
@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
+import { LanguageContext } from '../../context/LanguageContext';
+import { Font } from '../../styles/Font';
 
 const { width } = Dimensions.get('window');
 
@@ -14,14 +16,20 @@ const CustomConfirmModal = ({
   visible,
   onCancel,
   onConfirm,
-  onCancelText = 'Cancel',
-  onConfirmText = 'OK',
+  onCancelText,
+  onConfirmText,
   titleShow = true,
-  title = 'Remove Document',
-  message = 'Are you sure you want to remove this document?',
+  title,
+  message,
   confirmButtonStyle,
   cancelButtonStyle
 }) => {
+  const { t } = useContext(LanguageContext);
+  const resolvedTitle = title ?? t('dialogs.defaultTitle');
+  const resolvedMessage = message ?? t('dialogs.defaultMessage');
+  const resolvedCancelText = onCancelText ?? t('common.cancel');
+  const resolvedConfirmText = onConfirmText ?? t('common.ok');
+
   return (
     <Modal
       transparent
@@ -31,20 +39,20 @@ const CustomConfirmModal = ({
     >
       <View style={styles.overlay}>
         <View style={styles.modal}>
-          {titleShow && <Text style={styles.title}>{title}</Text>}
-          {typeof message === 'string' ? (
-            <Text style={styles.message}>{message}</Text>
+          {titleShow && <Text style={styles.title}>{resolvedTitle}</Text>}
+          {typeof resolvedMessage === 'string' ? (
+            <Text style={styles.message}>{resolvedMessage}</Text>
           ) : (
-            <View style={{ marginBottom: 25 }}>{message}</View>
+            <View style={styles.customMessage}>{resolvedMessage}</View>
           )}
           <View style={styles.actions}>
             {onCancel && (
               <TouchableOpacity style={[styles.cancelBtn,cancelButtonStyle]} onPress={onCancel}>
-                <Text style={styles.cancelText}>{onCancelText}</Text>
+                <Text style={styles.cancelText}>{resolvedCancelText}</Text>
               </TouchableOpacity>
             )}
             <TouchableOpacity style={[styles.confirmBtn,confirmButtonStyle]} onPress={onConfirm}>
-              <Text style={styles.confirmText}>{onConfirmText}</Text>
+              <Text style={styles.confirmText}>{resolvedConfirmText}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -71,12 +79,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: Font.SemiBold,
     marginBottom: 10,
     color: '#333',
   },
   message: {
     fontSize: 14,
+    fontFamily: Font.Regular,
     color: '#666',
     marginBottom: 25,
   },
@@ -84,6 +93,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     gap: 10,
+  },
+  customMessage: {
+    marginBottom: 25,
   },
   cancelBtn: {
     paddingVertical: 10,
@@ -99,10 +111,10 @@ const styles = StyleSheet.create({
   },
   cancelText: {
     color: '#333',
-    fontWeight: '500',
+    fontFamily: Font.Medium,
   },
   confirmText: {
     color: '#fff',
-    fontWeight: '600',
+    fontFamily: Font.SemiBold,
   },
 });

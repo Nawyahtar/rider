@@ -1,7 +1,6 @@
 import React, {
-  useState,
   useContext,
-  useEffect,
+  useState,
   useCallback,
   useMemo,
 } from 'react';
@@ -14,7 +13,6 @@ import {
   FlatList,
   StatusBar,
 } from 'react-native';
-import { AuthContext } from '../../context/AuthContext';
 import { Screen } from '../../constant/Screen';
 import BaseContainer from '../../components/BaseContainer';
 import Colors from '../../styles/Color';
@@ -23,10 +21,10 @@ import OrderCard from '../../components/card/OrderCard';
 import amico from '../../assets/images/amico.png';
 import WelcomeModal from '../../components/modals/WelcomeModal';
 import { Font } from '../../styles/Font';
-import { OrderContext } from '../../context/OrderContext';
+import { LanguageContext } from '../../context/LanguageContext';
 
 const HomeScreen = ({ navigation }) => {
-  const { userToken } = useContext(AuthContext);
+  const { t } = useContext(LanguageContext);
   const userName = 'John Doe';
 
   const [isEnabled, setIsEnabled] = useState(false);
@@ -52,9 +50,6 @@ const HomeScreen = ({ navigation }) => {
         totalPrice: 5500,
         restaurantName: 'Golden Palace',
         receiverName: 'Myo Myo',
-        bikerLocation: { latitude: 16.8382, longitude: 96.1684 },
-        restaurantLocation: { latitude: 16.775742551536613, longitude: 96.22572621308551 },
-        receiverLocation: { latitude: 16.775995132611854, longitude: 96.22775908999306 },
         completed: false,
         status: 'Pending',
         statusStep: 'Restaurant',
@@ -71,9 +66,6 @@ const HomeScreen = ({ navigation }) => {
         totalPrice: 3800,
         restaurantName: 'BBQ House',
         receiverName: 'Hnin Ei Ei',
-        bikerLocation: { latitude: 16.8390, longitude: 96.1710 },
-        restaurantLocation: { latitude: 16.870815792808227, longitude: 96.25456102526461 },
-        receiverLocation: { latitude: 16.890858905888688, longitude: 96.24180828293596 },
         completed: false,
         status: 'Pending',
         statusStep: 'Delivered',
@@ -88,9 +80,6 @@ const HomeScreen = ({ navigation }) => {
         totalPrice: 6000,
         restaurantName: 'Pasta & Co.',
         receiverName: 'Nyein Chan',
-        bikerLocation: { latitude: 16.8370, longitude: 96.1650 },
-        restaurantLocation: { latitude: 13.9132123, longitude: 100.5549853 },
-        receiverLocation: { latitude: 13.9138525, longitude: 100.5511072 },
         completed: false,
         status: 'Pending',
         statusStep: 'Delivered',
@@ -105,9 +94,6 @@ const HomeScreen = ({ navigation }) => {
         totalPrice: 3500,
         restaurantName: 'Noodle King',
         receiverName: 'Aye Aye',
-        bikerLocation: { latitude: 16.8360, longitude: 96.1690 },
-        restaurantLocation: { latitude: 16.774450091371726, longitude: 96.2265714215086 },
-        receiverLocation: { latitude: 16.77464260282961, longitude: 96.22647531320055 },
         completed: false,
         status: 'Pending',
         statusStep: 'Restaurant',
@@ -121,13 +107,13 @@ const HomeScreen = ({ navigation }) => {
   const ListHeader = useMemo(() => {
     return (
       <View style={styles.orderListHeader}>
-        <Text style={styles.orderListTitle}>Upcoming Orders</Text>
+        <Text style={styles.orderListTitle}>{t('home.upcomingOrders')}</Text>
         <TouchableOpacity onPress={() => navigation.navigate(Screen.BottomTab.Ride)}>
-          <Text style={styles.orderListViewAll}>View All</Text>
+          <Text style={styles.orderListViewAll}>{t('home.viewAll')}</Text>
         </TouchableOpacity>
       </View>
     );
-  });
+  }, [navigation, t]);
 
   return (
     <BaseContainer contentStyle={styles.background}>
@@ -137,17 +123,17 @@ const HomeScreen = ({ navigation }) => {
       <View style={styles.headerContainer}>
         <View style={styles.rowContainer}>
           <View style={styles.leftBlock}>
-            <Text style={styles.header}>Home</Text>
-            <Text style={styles.label}>Today's Earnings</Text>
+            <Text style={styles.header}>{t('home.title')}</Text>
+            <Text style={styles.label}>{t('home.todaysEarnings')}</Text>
             <Text style={styles.amount}>
               120,000,000 MMK{'\n'}
-              <Text style={styles.subText}>Total earned today</Text>
+              <Text style={styles.subText}>{t('home.totalEarnedToday')}</Text>
             </Text>
             <TouchableOpacity
               style={styles.button}
               onPress={() => navigation.navigate(Screen.Other.Detail)}
             >
-              <Text style={styles.buttonText}>View Details</Text>
+              <Text style={styles.buttonText}>{t('home.viewDetails')}</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.imageWrapper}>
@@ -156,9 +142,9 @@ const HomeScreen = ({ navigation }) => {
         </View>
         <View style={styles.onlineContainer}>
           <View>
-            <Text style={styles.statusTitle}>Status</Text>
+            <Text style={styles.statusTitle}>{t('home.status')}</Text>
             <Text style={styles.statusSubtitle}>
-              Online: Open to any delivery
+              {t('home.onlineDescription')}
             </Text>
           </View>
           <SwitchToggle
@@ -175,9 +161,7 @@ const HomeScreen = ({ navigation }) => {
       </View>
 
       {!isEnabled ? (
-        <Text style={{ textAlign: 'center', marginTop: 20 }}>
-          You are currently offline. Please {'\n'}switch online to view available orders.
-        </Text>) :
+        <Text style={styles.offlineText}>{t('home.offlineMessage')}</Text>) :
         sampleOrders.length === 0 ? (
           <WelcomeModal userName={userName} onApply={onApply} />
         ) : (
@@ -200,6 +184,13 @@ export default HomeScreen;
 const styles = StyleSheet.create({
   background: {
     backgroundColor: Colors.screenBackground,
+  },
+  offlineText: {
+    marginTop: 20,
+    paddingHorizontal: 24,
+    color: Colors.text,
+    fontFamily: Font.Regular,
+    textAlign: 'center',
   },
   rowContainer: {
     flexDirection: 'row',

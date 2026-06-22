@@ -1,6 +1,5 @@
-import React, { memo } from 'react';
+import React, { memo, useContext } from 'react';
 import {
-  Modal,
   View,
   Text,
   Image,
@@ -9,19 +8,20 @@ import {
 import welcome from '../../assets/images/welcomeShake.png';
 import Colors from '../../styles/Color';
 import ButtonComponent from '../buttons/ButtonComponent';
+import { LanguageContext } from '../../context/LanguageContext';
+import { Font } from '../../styles/Font';
 
 const WelcomeModal = ({ userName = 'John Doe', onApply }) => {
+  const { t } = useContext(LanguageContext);
+
   return (
     <View style={styles.container}>
       <Image source={welcome} style={styles.image} resizeMode="contain" />
-      <Text style={styles.helloText}>Hello, Mr. {userName}</Text>
-      <Text style={styles.welcomeText}>You’re warmly welcome!</Text>
-      <Text style={styles.subText}>
-        Firstly, please apply the restaurants and {'\n'} shops nearby so that
-        you can start{'\n'} delivering the orders.
-      </Text>
+      <Text style={styles.helloText}>{t('welcome.hello', { name: userName })}</Text>
+      <Text style={styles.welcomeText}>{t('welcome.title')}</Text>
+      <Text style={styles.subText}>{t('welcome.message')}</Text>
       <ButtonComponent
-        title="Apply Now"
+        title={t('welcome.applyNow')}
         onPress={onApply}
         contentContainer={styles.button}
       />
@@ -46,19 +46,19 @@ const styles = StyleSheet.create({
   },
   helloText: {
     fontSize: 16,
-    fontWeight: '400',
+    fontFamily: Font.Regular,
     color: Colors.subtleText,
     marginBottom: 4,
   },
   welcomeText: {
     fontSize: 22,
-    fontWeight: '700',
+    fontFamily: Font.Bold,
     color: Colors.secondaryText,
     marginBottom: 12,
   },
   subText: {
     fontSize: 10,
-    fontWeight: '400',
+    fontFamily: Font.Regular,
     color: Colors.subtleText,
     textAlign: 'center',
     marginBottom: 24,

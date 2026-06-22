@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from 'react';
+import React, { useCallback, useContext, useState, useMemo } from 'react';
 import {
   StyleSheet,
   Text,
@@ -19,11 +19,13 @@ import CustomSnackbar from '../../components/sanckbar/CustomSnackBar';
 import ImageCarousel from '../../components/carousel/ImageCarousel';
 import { Screen } from '../../constant/Screen';
 import InfoCardComponent from '../../components/card/InfoCardComponent';
+import { LanguageContext } from '../../context/LanguageContext';
 
 const LEFT_DAYS = ['Monday', 'Wednesday', 'Friday', 'Sunday'];
 const RIGHT_DAYS = ['Tuesday', 'Thursday', 'Saturday'];
 
 const NearByDetailScreen = ({ navigation }) => {
+  const { t } = useContext(LanguageContext);
   const { params } = useRoute();
   const restaurant = params?.restaurant;
 
@@ -32,9 +34,7 @@ const NearByDetailScreen = ({ navigation }) => {
   const [type, setType] = useState('success');
   const [message, setMessage] = useState('');
 
-  if (!restaurant) return null;
-
-  const { name, phone, address, hours, image, status = '' } = restaurant;
+  const { name, phone, address, hours, image, status = '' } = restaurant || {};
 
   const infoRows = useMemo(
     () => [
@@ -62,7 +62,7 @@ const NearByDetailScreen = ({ navigation }) => {
         ),
       },
     ],
-    [],
+    [address, name, navigation, phone],
   );
 
   const isPendingOrSuccess = useMemo(
@@ -93,6 +93,8 @@ const NearByDetailScreen = ({ navigation }) => {
     setType(type);
     setSnackVisible(true);
   };
+
+  if (!restaurant) return null;
   const renderHoursColumn = days => (
     <View style={styles.column}>
       {days.map(day => (
@@ -184,17 +186,10 @@ const NearByDetailScreen = ({ navigation }) => {
         <CustomConfirmModal
           visible={visible}
           titleShow={false}
-          message={
-            <Text style={styles.messageStyle}>
-              <Text style={styles.modalText}>
-                Are you sure to apply as a rider to{'\n'}
-              </Text>
-              <Text style={styles.modalBold}>{name}?</Text>
-            </Text>
-          }
-          onConfirmText="Yes I'm Sure"
+          message={t('dialogs.applyAsRider', { name })}
+          onConfirmText={t('common.yesSure')}
           onConfirm={handleConfirm}
-          onCancelText="No"
+          onCancelText={t('common.no')}
           onCancel={handleCancel}
           confirmButtonStyle={styles.confirmButton}
           cancelButtonStyle={styles.cancelButton}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -30,9 +30,11 @@ import OrderConfirm from "../../assets/images/orderConfirm.png"
 import CustomConfirmModal from '../../components/modals/CustomConfirmModal';
 import ImagePickerBox from '../../components/imagepicker/ImagePickerBox';
 import OrderStatus from '../../utils/OrderStatus';
+import { LanguageContext } from '../../context/LanguageContext';
 
 
 const OrderViewDetail = ({ navigation, route }) => {
+  const { t } = useContext(LanguageContext);
   const { order, source } = route.params || {};
   const { status, receiverName } = order || {}
   const title = status === OrderStatus.CONFIRM_ORDER ? "Delivery Confirmation" : "Pick Up Confirmation"
@@ -331,17 +333,10 @@ const OrderViewDetail = ({ navigation, route }) => {
       <CustomConfirmModal
         visible={confirmVisible}
         titleShow={false}
-        message={
-          <Text style={styles.messageStyle}>
-            <Text style={styles.modalText}>
-              Are you sure to accept to pick up{'\n'}
-            </Text>
-            <Text style={styles.modalBold}>the order at {receiverName} ?</Text>
-          </Text>
-        }
-        onConfirmText="Yes I'm Sure"
+        message={t('dialogs.acceptPickup', { name: receiverName })}
+        onConfirmText={t('common.yesSure')}
         onConfirm={handleConfirm}
-        onCancelText="No"
+        onCancelText={t('common.no')}
         onCancel={handleCancel}
         confirmButtonStyle={styles.confirmButton}
         cancelButtonStyle={styles.cancelButton}
@@ -413,9 +408,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: Colors.text,
     lineHeight: 30,
-  },
-  bold: {
-    fontWeight: '600',
   },
   verticalLine: {
     width: 8,

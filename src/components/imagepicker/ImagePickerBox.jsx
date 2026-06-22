@@ -1,4 +1,4 @@
-import React, { useState, memo } from 'react';
+import React, { useContext, useState, memo } from 'react';
 import {
   Text,
   TouchableOpacity,
@@ -11,8 +11,11 @@ import {
 } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import Colors from '../../styles/Color';
+import { LanguageContext } from '../../context/LanguageContext';
+import { Font } from '../../styles/Font';
 
 const ImagePickerBox = ({ onImagePicked }) => {
+  const { t } = useContext(LanguageContext);
   const [imageUri, setImageUri] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -22,11 +25,11 @@ const ImagePickerBox = ({ onImagePicked }) => {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.CAMERA,
         {
-          title: 'Camera Permission',
-          message: 'App needs access to your camera to take a photo.',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
+          title: t('dialogs.cameraPermissionTitle'),
+          message: t('dialogs.cameraPermissionMessage'),
+          buttonNeutral: t('dialogs.askLater'),
+          buttonNegative: t('common.cancel'),
+          buttonPositive: t('common.ok'),
         }
       );
       return granted === PermissionsAndroid.RESULTS.GRANTED;
@@ -80,7 +83,7 @@ const ImagePickerBox = ({ onImagePicked }) => {
         {imageUri ? (
           <Image source={{ uri: imageUri }} style={styles.imagePreview} />
         ) : (
-          <Text style={styles.uploadText}>Upload Photo</Text>
+          <Text style={styles.uploadText}>{t('dialogs.uploadPhoto')}</Text>
         )}
       </TouchableOpacity>
 
@@ -96,18 +99,18 @@ const ImagePickerBox = ({ onImagePicked }) => {
           onPressOut={() => setModalVisible(false)}
         >
           <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Choose Image Source</Text>
+            <Text style={styles.modalTitle}>{t('dialogs.chooseImageSource')}</Text>
             <TouchableOpacity style={styles.modalButton} onPress={pickFromCamera}>
-              <Text style={styles.modalButtonText}>Take Photo</Text>
+              <Text style={styles.modalButtonText}>{t('dialogs.takePhoto')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.modalButton} onPress={pickFromGallery}>
-              <Text style={styles.modalButtonText}>Choose from Gallery</Text>
+              <Text style={styles.modalButtonText}>{t('dialogs.chooseFromGallery')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.modalButton, styles.cancelButton]}
               onPress={() => setModalVisible(false)}
             >
-              <Text style={[styles.modalButtonText, { color: Colors.secondaryText }]}>Cancel</Text>
+              <Text style={[styles.modalButtonText, styles.cancelButtonText]}>{t('common.cancel')}</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
@@ -130,7 +133,7 @@ const styles = StyleSheet.create({
   uploadText: {
     color: Colors.secondaryText,
     fontSize: 18,
-    fontWeight: '700',
+    fontFamily: Font.Bold,
   },
   imagePreview: {
     width: '100%',
@@ -150,7 +153,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: Font.Bold,
     color: Colors.text,
     marginBottom: 16,
     textAlign: 'center',
@@ -164,11 +167,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     color: Colors.primary,
-    fontWeight: '600',
+    fontFamily: Font.SemiBold,
   },
   cancelButton: {
     borderBottomWidth: 0,
     marginTop: 10,
+  },
+  cancelButtonText: {
+    color: Colors.secondaryText,
   },
 });
 

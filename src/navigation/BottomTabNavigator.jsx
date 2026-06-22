@@ -1,7 +1,7 @@
 // src/navigation/BottomTabNavigator.jsx
-import React from 'react';
+import React, { useContext } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Home, Bike, Map, Bell, CircleUser } from 'lucide-react-native'; // ✅ Lucide icons
+import { Home, Bike, Map, Bell, CircleUser } from 'lucide-react-native';
 
 import HomeScreen from '../screens/bottomTab/HomeScreen';
 import NearByScreen from '../screens/bottomTab/NearByScreen';
@@ -10,11 +10,22 @@ import NotificationScreen from '../screens/bottomTab/NotificationScreen';
 import AccountScreen from '../screens/bottomTab/AccountScreen';
 import { Screen } from '../constant/Screen';
 import Colors from '../styles/Color';
-import { StatusBar } from 'react-native';
+import { LanguageContext } from '../context/LanguageContext';
+import { Font } from '../styles/Font';
 
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator = () => {
+  const { t } = useContext(LanguageContext);
+
+  const labels = {
+    [Screen.BottomTab.Home]: t('nav.home'),
+    [Screen.BottomTab.NearyBy]: t('nav.nearby'),
+    [Screen.BottomTab.Ride]: t('nav.ride'),
+    [Screen.BottomTab.Notification]: t('nav.notifications'),
+    [Screen.BottomTab.Account]: t('nav.account'),
+  };
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -28,7 +39,9 @@ const BottomTabNavigator = () => {
         tabBarLabelStyle: {
           fontSize: 12,
           marginBottom: 8,
+          fontFamily: Font.Medium,
         },
+        tabBarLabel: labels[route.name],
         tabBarActiveTintColor: Colors.text,
         tabBarInactiveTintColor: Colors.tabInactive,
         tabBarIcon: ({ focused, color }) => {

@@ -29,6 +29,8 @@ import { OrderProvider, OrderContext } from './src/context/OrderContext';
 import CurrentOrderBar from './src/components/modals/CurrentOrderBar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Screen } from './src/constant/Screen';
+import { LanguageProvider } from './src/context/LanguageContext';
+import { translations } from './src/localization/translations';
 
 const initialState = {
   isLoading: true,
@@ -55,20 +57,26 @@ export default function App() {
   const navigationRef = useRef();
 
   const requestLocationPermission = async () => {
+    const savedLanguage = await AsyncStorage.getItem('appLanguage');
+    const localizedText = translations[savedLanguage] ?? translations.en;
+
     if (Platform.OS === 'android') {
       try {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
           {
-            title: 'Location Permission',
-            message: 'This app needs access to your location to track delivery routes.',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
+            title: localizedText.dialogs.locationPermissionTitle,
+            message: localizedText.dialogs.locationPermissionMessage,
+            buttonNeutral: localizedText.dialogs.askLater,
+            buttonNegative: localizedText.common.cancel,
+            buttonPositive: localizedText.common.ok,
           }
         );
         if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-          Alert.alert('Permission denied', 'Location access is required for tracking.');
+          Alert.alert(
+            localizedText.common.permissionDenied,
+            localizedText.dialogs.locationPermissionDenied
+          );
         }
       } catch (err) {
         console.warn(err);
@@ -116,31 +124,33 @@ export default function App() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <AuthContext.Provider value={authContext}>
-        <OrderProvider>
-          <NavigationContainer
-            ref={navigationRef}
-            onReady={() =>
-              setCurrentRouteName(navigationRef.current.getCurrentRoute().name)
-            }
-            onStateChange={() => {
-              const currentRoute = navigationRef.current.getCurrentRoute();
-              setCurrentRouteName(currentRoute.name);
-            }}
-          >
-            <AppWithOverlay
-              isLoading={state.isLoading}
-              showGetStarted={showGetStarted}
-              userToken={state.userToken}
-              currentRouteName={currentRouteName}
-              onContinue={async () => {
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                setShowGetStarted(false);
+      <LanguageProvider>
+        <AuthContext.Provider value={authContext}>
+          <OrderProvider>
+            <NavigationContainer
+              ref={navigationRef}
+              onReady={() =>
+                setCurrentRouteName(navigationRef.current.getCurrentRoute().name)
+              }
+              onStateChange={() => {
+                const currentRoute = navigationRef.current.getCurrentRoute();
+                setCurrentRouteName(currentRoute.name);
               }}
-            />
-          </NavigationContainer>
-        </OrderProvider>
-      </AuthContext.Provider>
+            >
+              <AppWithOverlay
+                isLoading={state.isLoading}
+                showGetStarted={showGetStarted}
+                userToken={state.userToken}
+                currentRouteName={currentRouteName}
+                onContinue={async () => {
+                  await new Promise(resolve => setTimeout(resolve, 1000));
+                  setShowGetStarted(false);
+                }}
+              />
+            </NavigationContainer>
+          </OrderProvider>
+        </AuthContext.Provider>
+      </LanguageProvider>
     </GestureHandlerRootView>
   );
 }
